@@ -27,14 +27,14 @@ pipeline{
             
         } 
     }
-       
+       /*
         stage("4. store in artifactory"){
             steps{
                 sh "mvn deploy"
   
         }
            }
-           
+         */  
            stage("5. deploy to tomcat"){
                steps{
                    sh "echo deploy to tomcat"
