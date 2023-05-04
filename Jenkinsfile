@@ -1,25 +1,45 @@
- 
-node{
-    def MHD = tool name: "maven3.8.4"
-    stage('code'){
-        git branch: 'development', url: 'https://github.com/team16flight/web-app.git'
+pipeline{
+    agent any
+    tools{
+        maven "maven3.8.8"
     }
-    stage('BUILD'){
-       sh "${MHD}/bin/mvn clean package"
- 
+    
+    stages{
+      stage("1. clone repo"){
+          steps{
+              sh "echo start cloning "
+              git branch: 'main', credentialsId: 'tomcat-cred', url: 'https://github.com/floatt1/web-app.git'
+              sh "echo end clone"
+          
+      }
+     }
+     
+     stage("2. build with maven"){
+         steps{
+            sh "echo start build"
+            sh "mvn clean package"
+         }
+     }
+     stage("3. code scan"){
+        steps{
+            sh "mvn sonar:sonar"
+            
+            
+        } 
     }
+      stage("4. store in artifactory"){
+            steps{
+                sh "mvn deploy"
   
-    /*
-    stage('deploy'){
-  sshagent(['tomcat']) {
-  sh "scp -o StrictHostKeyChecking=no target/*war ec2-user@172.31.15.31:/opt/tomcat9/webapps/"
-}
-}
-stage('email'){
-emailext body: '''Build is over
-
-JOMACS 
-437212483''', recipientProviders: [developers(), requestor()], subject: 'Build', to: 'tdapp@gmail.com'
-}
-    */
-}
+        }
+           }
+           
+           stage("5. deploy to tomcat"){
+               steps{
+                   sh "echo deploy to tomcat"
+                   deploy adapters: [tomcat9(credentialsId: 'tomcat-credentials', path: '', url: 'http://54.205.162.73:9000/')], contextPath: '/target/*.war', war: ''
+               }
+           }
+      
+   }
+}  
