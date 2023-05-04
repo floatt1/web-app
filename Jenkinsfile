@@ -27,7 +27,7 @@ pipeline{
             
         } 
     }
-       /*
+       
         stage("4. store in artifactory"){
             steps{
                 sh "mvn deploy"
@@ -41,6 +41,6 @@ pipeline{
                    deploy adapters: [tomcat9(credentialsId: 'tomcat-credentials', path: '', url: 'http://54.205.162.73:9000/')], contextPath: '/target/*.war', war: ''
                }
            }
-       */      
+            
    }
 }  
