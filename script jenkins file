@@ -44,3 +44,5 @@ pipeline{
         deploy adapters: [tomcat9(credentialsId: 'tomcat-credentials', path: '', url: 'http://52.91.234.153:9000')], contextPath: null, war: 'target/*.war'       
         }
       }
+   }
+}
