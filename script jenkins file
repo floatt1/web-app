@@ -1,0 +1,46 @@
+pipeline{
+    agent {""}
+    //agent any
+    tools{
+          maven "maven3.8.8"
+    }
+    
+    stages{
+      stage("1. clone repo"){
+         agent {label "node1"}
+          steps{
+              sh "echo start cloning "
+              git branch: 'main', credentialsId: 'tomcat-cred', url: 'https://github.com/floatt1/web-app.git'
+              sh "echo end clone" 
+          }
+        }
+     
+     stage("2. buil with maven"){
+         agent {label "node1"}
+         steps{
+            sh "echo start build"
+            sh "mvn clean package"
+         }
+       }
+     stage("3. code scan"){
+        agent any
+        steps{
+            sh "mvn sonar:sonar"   
+        } 
+      }
+      
+    stage("4. store in nexus"){
+    agent {label"node1"}
+        steps{
+            sh "mvn deploy"
+            
+        }
+      }
+
+    stage("5. deploy to tomcat"){
+    agent {label"node1"}
+        steps{
+        sh "echo deploy to tomcat"
+        deploy adapters: [tomcat9(credentialsId: 'tomcat-credentials', path: '', url: 'http://52.91.234.153:9000')], contextPath: null, war: 'target/*.war'       
+        }
+      }
