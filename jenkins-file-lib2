@@ -22,15 +22,13 @@
          }
      }
      
-     /*
+     
      stage("3. code scan"){
         steps{
-           common("Code Quality Report")
-            
-            
+           common("Code Quality Report")  
         } 
     }
-    */
+    
       stage("4. store in artifactory"){
             steps{
             common("Upload Into Nexus")
