@@ -1,0 +1,43 @@
+@Library('Float-Shared-Library')_
+ pipeline{
+    agent any
+    tools{
+        maven "maven3.8.8"
+    }
+    
+    stages{
+      stage("1. clone repo"){
+          steps{
+              sh "echo start cloning "
+              git branch: 'main', credentialsId: 'tomcat-cred', url: 'https://github.com/floatt1/web-app.git'
+              sh "echo end clone"
+          
+      }
+     }
+     
+     stage("2. build with maven"){
+         steps{
+            sh "echo start build"
+            common("Build")
+         }
+     }
+     
+     /*
+     stage("3. code scan"){
+        steps{
+           common("Code Quality Report")
+            
+            
+        } 
+    }
+    */
+      stage("4. store in artifactory"){
+            steps{
+            common("Upload Into Nexus")
+  
+        }
+       }
+           
+    }
+    
+  }
